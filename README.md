@@ -1,4 +1,10 @@
-# opensheet
+# opensheet (nested feature!)
+
+**google sheet:**
+https://docs.google.com/spreadsheets/d/1hFt4kkXoAx-LFZvfhsN8JITb5zuAufqhkvs0ZKTjxac/edit#gid=0
+
+**opensheet json:**
+https://opensheet.justinoneill2007.workers.dev/1hFt4kkXoAx-LFZvfhsN8JITb5zuAufqhkvs0ZKTjxac/nested
 
 #### opensheet’s servers get 150,000,000 hits each month! <br /> If the project is is useful to you, I’d love your help in covering hosting costs. <br /> You can [sponsor me for $3/month on GitHub Sponsors](https://github.com/sponsors/benborgers). Thank you!
 
@@ -33,12 +39,9 @@ For example:
 https://opensheet.elk.sh/1o5t26He2DzTweYeleXOGiDjlU4Jkx896f95VUHVgS8U/Test+Sheet
 ```
 
-```
-
 For nested example:
-
 ```
-https://opensheet.elk.sh/1o5t26He2DzTweYeleXOGiDjlU4Jkx896f95VUHVgS8U/Test+Sheet+Nested
+https://opensheet.justinoneill2007.workers.dev/1hFt4kkXoAx-LFZvfhsN8JITb5zuAufqhkvs0ZKTjxac/nested
 ```
 
 
