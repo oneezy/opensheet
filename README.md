@@ -16,6 +16,8 @@ This API returns a given Google Sheet’s rows as JSON data.
 
 In order to use it:
 
+
+
 1. The first row of your Google Sheet should be a header row  ([here’s an example](https://docs.google.com/spreadsheets/d/1o5t26He2DzTweYeleXOGiDjlU4Jkx896f95VUHVgS8U/edit)).
 1. Link sharing must be turned on so anyone with the link can _view_ the Google Sheet.
 
@@ -30,6 +32,15 @@ For example:
 ```
 https://opensheet.elk.sh/1o5t26He2DzTweYeleXOGiDjlU4Jkx896f95VUHVgS8U/Test+Sheet
 ```
+
+```
+
+For nested example:
+
+```
+https://opensheet.elk.sh/1o5t26He2DzTweYeleXOGiDjlU4Jkx896f95VUHVgS8U/Test+Sheet+Nested
+```
+
 
 You can also replace `tab_name` with the tab number (in the order that the tabs are arranged), if you don’t know the name. For example, to get the first sheet:
 

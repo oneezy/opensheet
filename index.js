@@ -2,6 +2,21 @@ addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event));
 });
 
+// Handles Nested Properties with "." notation
+// Example: some | some.nested | some.nested.name | some.nested.description
+function setNestedObj(obj, path, value) {
+  const keys = path.split('.');
+  let current = obj;
+  
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    current[key] = current[key] || {};
+    current = current[key];
+  }
+
+  current[keys[keys.length - 1]] = value;
+}
+
 async function handleRequest(event) {
   const url = new URL(event.request.url);
 
@@ -9,7 +24,7 @@ async function handleRequest(event) {
     return new Response("", {
       status: 302,
       headers: {
-        location: "https://github.com/benborgers/opensheet#readme",
+        location: "https://github.com/oneezy/opensheet#readme",
       },
     });
   }
@@ -23,7 +38,7 @@ async function handleRequest(event) {
     return error("URL format is /spreadsheet_id/sheet_name", 404);
   }
 
-  const cacheKey = `https://opensheet.elk.sh/${id}/${sheet}`;
+  const cacheKey = `https://opensheet.justinoneill2007.workers.dev/${id}/${sheet}`;
   const cache = caches.default;
   const cachedResponse = await cache.match(cacheKey);
   if (cachedResponse) {
@@ -59,7 +74,7 @@ async function handleRequest(event) {
 
     sheet = sheetWithThisIndex.properties.title;
   }
-
+  
   const result = await (
     await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${sheet}?key=${GOOGLE_API_KEY}`
@@ -71,14 +86,14 @@ async function handleRequest(event) {
   }
 
   const rows = [];
-
   const rawRows = result.values || [];
   const headers = rawRows.shift();
 
   rawRows.forEach((row) => {
     const rowData = {};
     row.forEach((item, index) => {
-      rowData[headers[index]] = item;
+      // rowData[headers[index]] = item;
+      setNestedObj(rowData, headers[index], item);
     });
     rows.push(rowData);
   });
