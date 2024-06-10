@@ -15,6 +15,24 @@ function setNestedObj(obj, path, value) {
   current[keys[keys.length - 1].replace(/\[\]$/, "")] = value;
 }
 
+function parseBracketNotation(obj, path, value) {
+  const regex = /(.*?)\[(.*?)\]/;
+  let match;
+  while ((match = regex.exec(path))) {
+    const [, parent, child] = match;
+    if (!obj[parent]) obj[parent] = [];
+    const index = obj[parent].findIndex((item) => !item.hasOwnProperty(child));
+    if (index === -1) {
+      const newItem = {};
+      newItem[child] = value;
+      obj[parent].push(newItem);
+    } else {
+      obj[parent][index][child] = value;
+    }
+    path = path.slice(match[0].length);
+  }
+}
+
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
@@ -161,63 +179,23 @@ function processFlatJSON(headers, rawRows) {
 }
 
 function processNestedJSON(headers, rawRows) {
-  const aggregatedData = {};
-  const arrays = {};
+  const nestedData = {};
 
-  rawRows.forEach((row) => {
-    let rowData = {};
-    let hasData = false;
-
+  rawRows.forEach((row, rowIndex) => {
+    console.log(`Processing row ${rowIndex + 1} for nested data:`, row);
     row.forEach((item, index) => {
       const header = headers[index];
-      const match = header.match(/(.*?)\[(.*?)\]/);
-
-      if (match) {
-        const [_, arrayPrefix, arrayKey] = match;
-        if (!arrays[arrayPrefix]) arrays[arrayPrefix] = [];
-        const lastGroup = arrays[arrayPrefix][arrays[arrayPrefix].length - 1];
-
-        if (lastGroup && lastGroup[arrayKey] === undefined) {
-          lastGroup[arrayKey] = item;
-        } else {
-          const newGroup = { [arrayKey]: item };
-          arrays[arrayPrefix].push(newGroup);
-        }
-      } else {
-        if (item) {
-          if (header.includes(".")) {
-            setNestedObj(rowData, header, item);
-          } else {
-            rowData[header] = item;
-          }
-          hasData = true;
-        }
+      if (header.includes("[")) {
+        parseBracketNotation(nestedData, header, item);
+      } else if (header.includes(".")) {
+        setNestedObj(nestedData, header, item);
       }
     });
-
-    // Only merge rowData if it has data
-    if (hasData) {
-      for (const key in rowData) {
-        setNestedObj(aggregatedData, key, rowData[key]);
-      }
-    }
+    console.log(`Nested data after row ${rowIndex + 1}:`, nestedData);
   });
 
-  // Add non-empty arrays to aggregatedData
-  for (const arrayPrefix in arrays) {
-    if (arrays.hasOwnProperty(arrayPrefix)) {
-      const filteredArray = arrays[arrayPrefix].filter(
-        (item) => !isEmptyObject(item)
-      );
-      if (filteredArray.length > 0) {
-        setNestedObj(aggregatedData, arrayPrefix, filteredArray);
-      }
-    }
-  }
-
-  // Remove empty keys in a second pass
-  const cleanedData = removeEmptyKeys(aggregatedData);
-
+  const cleanedData = removeEmptyKeys(nestedData);
+  console.log("Cleaned Nested Data:", cleanedData);
   return [cleanedData];
 }
 

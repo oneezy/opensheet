@@ -114,53 +114,6 @@ async function handleRequest(event) {
 
   const rawRows = result.values || [];
   const headers = rawRows.shift();
-  console.log("Headers:", headers);
-
-  // Check if the structure is flat or nested
-  const isNested = headers.some(
-    (header) => header.includes(".") || header.includes("[")
-  );
-  console.log("Is Nested:", isNested);
-
-  let data = [];
-
-  if (isNested) {
-    data = processNestedJSON(headers, rawRows);
-  } else {
-    data = processFlatJSON(headers, rawRows);
-  }
-
-  const apiResponse = new Response(JSON.stringify(data), {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": `s-maxage=30`,
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers":
-        "Origin, X-Requested-With, Content-Type, Accept",
-    },
-  });
-
-  event.waitUntil(cache.put(cacheKey, apiResponse.clone()));
-
-  return apiResponse;
-}
-
-function processFlatJSON(headers, rawRows) {
-  const data = [];
-  rawRows.forEach((row, rowIndex) => {
-    console.log(`Processing row ${rowIndex + 1} for flat data:`, row);
-    const rowData = {};
-    row.forEach((item, index) => {
-      const header = headers[index];
-      rowData[header] = item;
-    });
-    data.push(rowData);
-    console.log(`Flat data after row ${rowIndex + 1}:`, rowData);
-  });
-  return data;
-}
-
-function processNestedJSON(headers, rawRows) {
   const aggregatedData = {};
   const arrays = {};
 
@@ -218,7 +171,19 @@ function processNestedJSON(headers, rawRows) {
   // Remove empty keys in a second pass
   const cleanedData = removeEmptyKeys(aggregatedData);
 
-  return [cleanedData];
+  const rows = [cleanedData];
+
+  const apiResponse = new Response(JSON.stringify(rows), {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store", // Disable caching for development
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers":
+        "Origin, X-Requested-With, Content-Type, Accept",
+    },
+  });
+
+  return apiResponse;
 }
 
 const error = (message, status = 400) => {
