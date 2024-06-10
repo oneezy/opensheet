@@ -2,8 +2,6 @@ addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event));
 });
 
-// Handles Nested Properties with "." notation
-// Example: some | some.nested | some.nested.name | some.nested.description
 function setNestedObj(obj, path, value) {
   const keys = path.split(".");
   let current = obj;
@@ -15,6 +13,31 @@ function setNestedObj(obj, path, value) {
   }
 
   current[keys[keys.length - 1]] = value;
+}
+
+function removeEmptyKeys(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(removeEmptyKeys).filter((item) => !isEmptyObject(item));
+  } else if (typeof obj === "object" && obj !== null) {
+    const newObj = {};
+    for (const key in obj) {
+      if (obj[key] && typeof obj[key] === "object") {
+        const cleanedObj = removeEmptyKeys(obj[key]);
+        if (!isEmptyObject(cleanedObj)) {
+          newObj[key] = cleanedObj;
+        }
+      } else if (obj[key] !== "") {
+        newObj[key] = obj[key];
+      }
+    }
+    return newObj;
+  } else {
+    return obj;
+  }
+}
+
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
 
 async function handleRequest(event) {
@@ -92,10 +115,9 @@ async function handleRequest(event) {
   rawRows.forEach((row) => {
     const rowData = {};
     row.forEach((item, index) => {
-      // rowData[headers[index]] = item;
       setNestedObj(rowData, headers[index], item);
     });
-    rows.push(rowData);
+    rows.push(removeEmptyKeys(rowData));
   });
 
   const apiResponse = new Response(JSON.stringify(rows), {

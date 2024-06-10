@@ -15,24 +15,6 @@ function setNestedObj(obj, path, value) {
   current[keys[keys.length - 1].replace(/\[\]$/, "")] = value;
 }
 
-function parseBracketNotation(obj, path, value) {
-  const regex = /(.*?)\[(.*?)\]/;
-  let match;
-  while ((match = regex.exec(path))) {
-    const [, parent, child] = match;
-    if (!obj[parent]) obj[parent] = [];
-    const index = obj[parent].findIndex((item) => !item.hasOwnProperty(child));
-    if (index === -1) {
-      const newItem = {};
-      newItem[child] = value;
-      obj[parent].push(newItem);
-    } else {
-      obj[parent][index][child] = value;
-    }
-    path = path.slice(match[0].length);
-  }
-}
-
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
@@ -172,31 +154,54 @@ function processFlatJSON(headers, rawRows) {
       const header = headers[index];
       rowData[header] = item;
     });
-    data.push(rowData);
+    data.push({ pages: "", page: rowData });
     console.log(`Flat data after row ${rowIndex + 1}:`, rowData);
   });
   return data;
 }
 
 function processNestedJSON(headers, rawRows) {
-  const nestedData = {};
+  const data = [];
 
-  rawRows.forEach((row, rowIndex) => {
-    console.log(`Processing row ${rowIndex + 1} for nested data:`, row);
+  rawRows.forEach((row) => {
+    const rowData = {};
     row.forEach((item, index) => {
       const header = headers[index];
       if (header.includes("[")) {
-        parseBracketNotation(nestedData, header, item);
-      } else if (header.includes(".")) {
-        setNestedObj(nestedData, header, item);
+        const parts = header.split("[");
+        const mainKey = parts[0];
+        const subKey = parts[1].replace("]", "");
+        if (!rowData[mainKey]) {
+          rowData[mainKey] = [];
+        }
+        const lastItem = rowData[mainKey][rowData[mainKey].length - 1];
+        if (lastItem && !lastItem.hasOwnProperty(subKey)) {
+          lastItem[subKey] = item;
+        } else {
+          const newItem = {};
+          newItem[subKey] = item;
+          rowData[mainKey].push(newItem);
+        }
+      } else {
+        setNestedObj(rowData, header, item);
       }
     });
-    console.log(`Nested data after row ${rowIndex + 1}:`, nestedData);
+
+    // Merging same key arrays
+    for (const key in rowData) {
+      if (Array.isArray(rowData[key])) {
+        if (!data.some((item) => item.page[key])) {
+          data.push({ pages: "", page: { [key]: [] } });
+        }
+        const arrayData = data.find((item) => item.page[key]).page[key];
+        rowData[key].forEach((element) => arrayData.push(element));
+      }
+    }
+
+    data.push({ pages: "", page: rowData });
   });
 
-  const cleanedData = removeEmptyKeys(nestedData);
-  console.log("Cleaned Nested Data:", cleanedData);
-  return [cleanedData];
+  return data;
 }
 
 const error = (message, status = 400) => {

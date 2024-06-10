@@ -1,0 +1,122 @@
+[
+  {
+    "company": {
+      "name": "Advanced Family Dental Care",
+      "website": "https://advancedfamilydental.care",
+      "year": "1984",
+      "phone": "14097684095",
+      "email": "hello@advancedfamilydental.care",
+      "address": "1490 Wellington Circle, Beaumont, TX 77706"
+    },
+    "brand": {
+      "logo": "/logo.png",
+      "icon": "/icon.png",
+      "color": [
+        {
+          "name": "primary",
+          "value": "red"
+        },
+        {
+          "name": "secondary",
+          "value": "blue"
+        },
+        {
+          "name": "accent",
+          "value": "yellow"
+        },
+        {
+          "name": "neutral",
+          "value": "gray"
+        }
+      ]
+    },
+    "social": [
+      {
+        "name": "facebook",
+        "url": "facebook.com"
+      },
+      {
+        "name": "twitter",
+        "url": "twitter.com"
+      },
+      {
+        "name": "instagram",
+        "url": "instagram.com"
+      },
+      {
+        "name": "linkedinn",
+        "url": "linkedin.com"
+      }
+    ],
+    "header": [
+      {
+        "left": "D",
+        "center": "D",
+        "right": "D"
+      }
+    ],
+    "footer": [
+      {
+        "left": "D",
+        "center": "D",
+        "right": "D"
+      }
+    ],
+    "team": [
+      {
+        "name": "Ronald Citrano",
+        "position": "DDS",
+        "description": "Dr. Citrano earned his Doctor of Dental Surgery in 1984 from the University of Texas in Houston. He is a member of the American Dental Association, the Texas Dental Association, and the Dental Association of Southeast Texas. Dr. Citrano was born and raised in Beaumont, Texas and has been living in Bridge City since 1995. Immediately after graduation, he associated in Port Arthur from 1984-1987. In 1987, Dr. Citrano opened his private practice in Beaumont. His priorities in life are God, family, and taking care of his patients. His hobbies are spending time with his family, researching nutrition and healthy lifestyles, and working on projects around his home. He gives God the credit for giving him the passion and the skill to provide quality dental care for all of his patients. He has an eagerness for learning new dental and health knowledge and sharing that knowledge with both his staff and patients. His mission in practicing dentistry is to educate his patients by taking time to thoroughly explain what treatment is necessary to get and maintain a healthy mouth. His goal is to provide each patient with affordable, quality dental care that will help them keep their healthy smiles for a lifetime.",
+        "image": "https://drive.google.com/uc?id=1wh4a4nfOXhvlr-JljKyywskJJHvfhrMP&export=view"
+      },
+      {
+        "name": "Elizabeth B.",
+        "position": "Office Manager",
+        "description": "Elizabeth B. began her career with Dr. Citrano in 2003, spending over 10 years being his assistant. Over those years, she learned all she could about the entire dentistry process. She is now the office manager but continues to go back to her roots from time to time being a backup assistant. Elizabeth’s favorite part of what we do is watching a new personality emerge as we work with a patient to restore their mouth because not only do we change their smile, but we also change their lives. She never gets tired of seeing that personality transformation.",
+        "image": "https://drive.google.com/uc?id=1hEgyYDJqRINpSvbD-LIVQgjuKb-KiYTT&export=view"
+      },
+      {
+        "name": "Corina L.",
+        "position": "Registered Dental Assistant",
+        "description": "Corina L. is Dr. Citrano’s lead assistant. She assists him with all your restorative procedures. Ranging from simple fillings to more advanced procedures like crown and bridges, extractions, and root canals. She Graduated from Kaplan College in 2013 with her RDA and has worked with Dr. Citrano ever since. Corina says the most rewarding part of her job is “making her patient comfortable while in her dental chair during treatment and building trust with each one. When she is not with her work family, she enjoys boating, surfing, skateboarding, and taking trips in her camper with her husband, son, daughter and 3 dogs.",
+        "image": "https://drive.google.com/uc?id=1Rp7OgdDM2nCfRGdZxlUawQpO-02OyxYv&export=view"
+      },
+      {
+        "name": "Kayla P.",
+        "position": "Registered Dental Assistant",
+        "description": "Kayla P. is Dr. Citrano’s 2nd assistant. She obtained her RDA license in 2018. She is an integral part of our team. Her duties are to assist Dr. Citrano with all dental procedures, sterilization, and room setup. She has a knack for making our patients feel relaxed and well taken care of. After work she enjoys time with her husband and daughter and on the weekends, she enjoys gardening, going to the park, and shopping.",
+        "image": "https://drive.google.com/uc?id=1itgTAxPN5eNqBVBE6tZFd7l2LjJ9ym1I&export=view"
+      },
+      {
+        "name": "Brittany H.",
+        "position": "Dental Hygienist",
+        "description": "Brittany H. graduated from LIT in 2010. She first came to work for Dr. Citrano in 2011 and returned full time in 2019. She strives to deliver the absolute best personalized and preventive care at every appointment to ensure patients have a positive experience. In her free time, she enjoys spending time with their three boys. Brittany enjoys gardening, natural health, and interior decorating.",
+        "image": "https://drive.google.com/uc?id=1ZqvWU1TPKxxxkMNFEfm-7ZWXnRHujWHi&export=view"
+      },
+      {
+        "name": "Tesha C.",
+        "position": "Dental Hygienist",
+        "description": "Tesha C. graduated from LIT in 2006 and has been practicing as a Registered Dental Hygienist for 17 years. She has been employed by Dr. Citrano for 11 years. Tesha loves educating her patients because their smile is her everyday reward. She enjoys spending time with her husband Brandon and chasing her kids around the world to watch them perform in all their extracurricular activities.",
+        "image": "https://drive.google.com/uc?id=1pw2Oja6oFFVZCxwFmgV7iqij0WCNvGKN&export=view"
+      },
+      {
+        "name": "Hailey J.",
+        "position": "Treatment Coordinator",
+        "description": "Hailey J. has worked with Dr. Citrano off and on since 2015. She can do anything from insurance to treatment coordinator. She took a few years off to pursue her associate degree in Surgical Technology. She worked at St. Elizabeth for a few years before she decided to stay home with her babies. She comes in and works with us as needed. She has worked with us for the last year, but the time has come for her to return to her five kiddos ranging from 13 – 2 yrs old. She enjoys family game nights, camping trips and watching their kids play their favorite sports. When she isn’t being a full-time mommy she enjoys pottery, painting, and antique shopping. Hailey says “Dr. Citrano and his wife have been such a blessing in my life over the years, he brought me in without any experience and showed me the ropes of dentistry and what it means to be a team player.”",
+        "image": "https://drive.google.com/uc?id=1Um7HmSelYIf60qNToQ304vNUltmMP9qZ&export=view"
+      },
+      {
+        "name": "Katie K.",
+        "position": "RDA, Hygiene Coordinator",
+        "description": "Katie K. started in the dental field in 2017. She became a registered dental assistant and assisted for about a year. She then transitioned into the front office, gaining more experience, and has stayed working in the front office ever since. Katie joined Dr. Citrano’s team in May 2023 as the Hygiene Coordinator. She enjoys greeting all the patients with a smile and tries to make them feel comfortable and at ease coming into the office. “I am married to my lovely husband, Josh. We have two dogs named Bella and Hank, and we hope to expand our family soon”. She enjoys shopping, trips to the beach and spending time with her family.",
+        "image": "https://drive.google.com/uc?id=1L4jRoNkgmguRIhmFrLuMiiTLBYbdzlyh&export=view"
+      },
+      {
+        "name": "Thyra F.",
+        "position": "Registered Dental Assistant",
+        "description": "Thyra F. has been a Dental Assistant for 11 years. She started her career in California and moved to Texas 3 years ago. She has worked in pediatrics, general dentistry, and periodontics. She decided to take this career path because she has always had a passion for helping people look and feel their best. Thyra has a toddler who takes up most of her free time, but in her spare time she likes to read and go dirt bike riding with her husband and family. She also likes to re-purpose furniture. She has 3 dogs and one cat. “I am blessed to be a part of Advanced Family Dental Care with Dr. Citrano and team”.",
+        "image": "https://drive.google.com/uc?id=1RR30G9ziDwwtqQttCrFwo7ZEHJXH_mPt&export=view"
+      }
+    ]
+  }
+]
