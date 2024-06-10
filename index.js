@@ -2,18 +2,46 @@ addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event));
 });
 
-// Handles Nested Properties with "." notation and combines specified fields into arrays
 function setNestedObj(obj, path, value) {
-  const keys = path.split('.');
+  const keys = path.split(".");
   let current = obj;
 
   for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i].replace(/\[\]$/, ''); // Remove [] if present
+    const key = keys[i].replace(/\[\]$/, ""); // Remove [] if present
     current[key] = current[key] || {};
     current = current[key];
   }
 
-  current[keys[keys.length - 1].replace(/\[\]$/, '')] = value;
+  current[keys[keys.length - 1].replace(/\[\]$/, "")] = value;
+}
+
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+
+function removeEmptyKeys(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(removeEmptyKeys).filter((item) => !isEmptyObject(item));
+  } else if (typeof obj === "object" && obj !== null) {
+    const newObj = {};
+    for (const key in obj) {
+      if (obj[key] && typeof obj[key] === "object") {
+        const cleanedObj = removeEmptyKeys(obj[key]);
+        if (!isEmptyObject(cleanedObj)) {
+          newObj[key] = cleanedObj;
+        }
+      } else if (
+        obj[key] !== null &&
+        obj[key] !== "" &&
+        obj[key] !== undefined
+      ) {
+        newObj[key] = obj[key];
+      }
+    }
+    return newObj;
+  } else {
+    return obj;
+  }
 }
 
 async function handleRequest(event) {
@@ -54,11 +82,9 @@ async function handleRequest(event) {
       return error("For this API, sheet numbers start at 1");
     }
 
-    const sheetData = await (
-      await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${id}?key=${GOOGLE_API_KEY}`
-      )
-    ).json();
+    const sheetData = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${id}?key=${GOOGLE_API_KEY}`
+    ).then((response) => response.json());
 
     if (sheetData.error) {
       return error(sheetData.error.message);
@@ -74,59 +100,80 @@ async function handleRequest(event) {
     sheet = sheetWithThisIndex.properties.title;
   }
 
-  const result = await (
-    await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${sheet}?key=${GOOGLE_API_KEY}`
-    )
-  ).json();
+  const result = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${sheet}?key=${GOOGLE_API_KEY}`
+  ).then((response) => response.json());
 
   if (result.error) {
     return error(result.error.message);
   }
 
-  const rows = [];
   const rawRows = result.values || [];
   const headers = rawRows.shift();
-  const groupedData = {};
+  const aggregatedData = {};
+  const arrays = {};
 
   rawRows.forEach((row) => {
-    const rowData = {};
+    let rowData = {};
+    let hasData = false;
+
     row.forEach((item, index) => {
       const header = headers[index];
       const match = header.match(/(.*?)\[(.*?)\]/);
 
       if (match) {
-        const [_, prefix, key] = match;
-        if (!rowData[prefix]) rowData[prefix] = [];
-        const lastGroup = rowData[prefix][rowData[prefix].length - 1];
+        const [_, arrayPrefix, arrayKey] = match;
+        if (!arrays[arrayPrefix]) arrays[arrayPrefix] = [];
+        const lastGroup = arrays[arrayPrefix][arrays[arrayPrefix].length - 1];
 
-        if (lastGroup && lastGroup[key] === undefined) {
-          lastGroup[key] = item;
+        if (lastGroup && lastGroup[arrayKey] === undefined) {
+          lastGroup[arrayKey] = item;
         } else {
-          const newGroup = { [key]: item };
-          rowData[prefix].push(newGroup);
+          const newGroup = { [arrayKey]: item };
+          arrays[arrayPrefix].push(newGroup);
         }
       } else {
-        setNestedObj(rowData, header, item);
+        if (item) {
+          setNestedObj(rowData, header, item);
+          hasData = true;
+        }
       }
     });
 
-    if (Object.keys(rowData).length) {
-      rows.push(rowData);
+    // Only merge rowData if it has data
+    if (hasData) {
+      for (const key in rowData) {
+        setNestedObj(aggregatedData, key, rowData[key]);
+      }
     }
   });
+
+  // Add non-empty arrays to aggregatedData
+  for (const arrayPrefix in arrays) {
+    if (arrays.hasOwnProperty(arrayPrefix)) {
+      const filteredArray = arrays[arrayPrefix].filter(
+        (item) => !isEmptyObject(item)
+      );
+      if (filteredArray.length > 0) {
+        setNestedObj(aggregatedData, arrayPrefix, filteredArray);
+      }
+    }
+  }
+
+  // Remove empty keys in a second pass
+  const cleanedData = removeEmptyKeys(aggregatedData);
+
+  const rows = [cleanedData];
 
   const apiResponse = new Response(JSON.stringify(rows), {
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": `s-maxage=30`,
+      "Cache-Control": "no-store", // Disable caching for development
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers":
         "Origin, X-Requested-With, Content-Type, Accept",
     },
   });
-
-  event.waitUntil(cache.put(cacheKey, apiResponse.clone()));
 
   return apiResponse;
 }
