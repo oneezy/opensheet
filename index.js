@@ -2,19 +2,18 @@ addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event));
 });
 
-// Handles Nested Properties with "." notation
-// Example: some | some.nested | some.nested.name | some.nested.description
+// Handles Nested Properties with "." notation and combines specified fields into arrays
 function setNestedObj(obj, path, value) {
   const keys = path.split('.');
   let current = obj;
-  
+
   for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
+    const key = keys[i].replace(/\[\]$/, ''); // Remove [] if present
     current[key] = current[key] || {};
     current = current[key];
   }
 
-  current[keys[keys.length - 1]] = value;
+  current[keys[keys.length - 1].replace(/\[\]$/, '')] = value;
 }
 
 async function handleRequest(event) {
@@ -74,7 +73,7 @@ async function handleRequest(event) {
 
     sheet = sheetWithThisIndex.properties.title;
   }
-  
+
   const result = await (
     await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${sheet}?key=${GOOGLE_API_KEY}`
@@ -88,14 +87,33 @@ async function handleRequest(event) {
   const rows = [];
   const rawRows = result.values || [];
   const headers = rawRows.shift();
+  const groupedData = {};
 
   rawRows.forEach((row) => {
     const rowData = {};
     row.forEach((item, index) => {
-      // rowData[headers[index]] = item;
-      setNestedObj(rowData, headers[index], item);
+      const header = headers[index];
+      const match = header.match(/(.*?)\[(.*?)\]/);
+
+      if (match) {
+        const [_, prefix, key] = match;
+        if (!rowData[prefix]) rowData[prefix] = [];
+        const lastGroup = rowData[prefix][rowData[prefix].length - 1];
+
+        if (lastGroup && lastGroup[key] === undefined) {
+          lastGroup[key] = item;
+        } else {
+          const newGroup = { [key]: item };
+          rowData[prefix].push(newGroup);
+        }
+      } else {
+        setNestedObj(rowData, header, item);
+      }
     });
-    rows.push(rowData);
+
+    if (Object.keys(rowData).length) {
+      rows.push(rowData);
+    }
   });
 
   const apiResponse = new Response(JSON.stringify(rows), {
